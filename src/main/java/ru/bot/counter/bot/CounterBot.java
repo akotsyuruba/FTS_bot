@@ -1,13 +1,16 @@
 package ru.bot.counter.bot;
 
+import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.exceptions.TelegramApiException;
 import ru.bot.counter.action.Action;
 import ru.bot.counter.bot.service.CounterBotService;
+import ru.bot.counter.bot.service.CounterBotServiceImpl;
 
 public class CounterBot extends TelegramLongPollingBot {
-    private CounterBotService counterBotService;
+    private CounterBotService counterBotService = new CounterBotServiceImpl();
 
 
     public void onUpdateReceived(Update update) {
@@ -19,7 +22,18 @@ public class CounterBot extends TelegramLongPollingBot {
         }
         Action botAction = counterBotService.getActionByName(txt);
         botAction.execute();
+        sendMsg(msg, "Hi!");
+    }
 
+    private void sendMsg(Message msg, String text) {
+        SendMessage s = new SendMessage();
+        s.setChatId(msg.getChatId()); // Боту может писать не один человек, и поэтому чтобы отправить сообщение, грубо говоря нужно узнать куда его отправлять
+        s.setText(text);
+        try { //Чтобы не крашнулась программа при вылете Exception
+            sendMessage(s);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
     }
 
     public String getBotUsername() {
