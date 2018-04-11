@@ -8,6 +8,7 @@ import org.telegram.telegrambots.exceptions.TelegramApiException;
 import ru.bot.counter.action.Action;
 import ru.bot.counter.bot.service.CounterBotService;
 import ru.bot.counter.bot.service.CounterBotServiceImpl;
+import ru.bot.counter.cup.pl.CupView;
 
 public class CounterBot extends TelegramLongPollingBot {
     private CounterBotService counterBotService = new CounterBotServiceImpl();
@@ -22,7 +23,15 @@ public class CounterBot extends TelegramLongPollingBot {
         }
         Action botAction = counterBotService.getActionByName(txt);
         botAction.execute();
-        sendMsg(msg, "Hi!");
+        sendMsg(msg, getCups(msg));
+    }
+
+    private String getCups(Message msg) {
+        String res = new String();
+        for (int i = 0; i < counterBotService.getCupsCount(msg.getChatId()); i++) {
+            res += CupView.getTemplate();
+        }
+        return res;
     }
 
     private void sendMsg(Message msg, String text) {

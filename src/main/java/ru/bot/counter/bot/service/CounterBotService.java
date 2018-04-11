@@ -7,4 +7,5 @@ public interface CounterBotService {
 
     boolean isCommand(String txt);
 
+    Integer getCupsCount(Long chatId);
 }
